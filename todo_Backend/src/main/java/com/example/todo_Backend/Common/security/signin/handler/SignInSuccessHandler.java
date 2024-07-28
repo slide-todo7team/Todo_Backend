@@ -26,13 +26,18 @@ public class SignInSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
     private final MemberRepository memberRepository;
     private final JwtService jwtService;
+    private final ObjectMapper objectMapper;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
 
+
         String email = extractEmail(authentication);
+
         String accessToken = jwtService.createAccessToken(email);
+
         String refreshToken = jwtService.createRefreshToken();
+
 
         Member member =  memberRepository.findByEmail(email).orElseThrow(
                 () -> new NotFoundMemberByEmailException(email)
@@ -45,13 +50,14 @@ public class SignInSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         jwtService.sendAccessAndRefreshToken(response, accessToken, refreshToken);
 
         Map<String, Object> mem = new HashMap<>();
-        mem.put("memId", member.getMemId());
 
-        ObjectMapper objectMapper = new ObjectMapper();
+
+        mem.put("user", member);
 
         response.setCharacterEncoding("UTF-8");
         response.setContentType("application/json");
-        objectMapper.writeValue(response.getWriter(), MemberResponse.ok(mem));
+
+        objectMapper.writeValue(response.getOutputStream(), MemberResponse.ok(mem));
 
     }
 
