@@ -2,6 +2,7 @@ package com.example.todo_Backend.User.Member.Repository;
 
 
 import com.example.todo_Backend.User.Member.entity.Member;
+import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -19,7 +20,8 @@ public interface MemberRepository extends JpaRepository<Member,Long> {
     Optional<Member> findByEmail(String email);
 
     @Modifying
-    @Query("UPDATE Member m SET m.refreshToken = :refreshToken WHERE m.id = :memId")
+    @Transactional
+    @Query("UPDATE Member m SET m.refreshToken = :refreshToken WHERE m.memId = :memId")
     void updateRefreshToken(@Param("memId") Long memId,@Param("refreshToken") String refreshToken);
 
     @Query("select m from Member m where m.refreshToken=refreshToken")

@@ -18,7 +18,7 @@ import java.util.Map;
 
 public class UsernamePasswordAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
 
-    private static final String DEFAULT_LOGIN_REQUEST_URL = "api/auth/login";
+    private static final String DEFAULT_LOGIN_REQUEST_URL = "/api/auth/login";
     private static final String HTTP_METHOD = "POST";
     private static final String CONTENT_TYPE = "application/json";
     private final ObjectMapper objectMapper;
@@ -38,7 +38,6 @@ public class UsernamePasswordAuthenticationFilter extends AbstractAuthentication
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
             throws AuthenticationException, IOException, ServletException {
 
-        System.out.println(request);
 
         if (request.getContentType() == null || !request.getContentType().equals(CONTENT_TYPE))
             throw new AuthenticationServiceException("Authentication Content-Type not supported: " + request.getContentType());

@@ -28,8 +28,9 @@ import java.util.Optional;
 @Slf4j
 public class JwtService {
 
-    @Value("{jwt.secret}")
+    @Value("${jwt.secret}")
     private String secret;
+
 
     private static final long ACCESS_TOKEN_EXPIRED_TIME = 1000L * 60L * 60L * 24L; // 1일
     // private static final long ACCESS_TOKEN_EXPIRED_TIME = 1000L * 10L; // 10초
@@ -55,7 +56,8 @@ public class JwtService {
                 .setIssuedAt(date)
                 .setExpiration(new Date(date.getTime() + ACCESS_TOKEN_EXPIRED_TIME));
 
-        claims.put("email", email);
+
+
 
         return Jwts.builder()
                 .setHeader(createHeader())
