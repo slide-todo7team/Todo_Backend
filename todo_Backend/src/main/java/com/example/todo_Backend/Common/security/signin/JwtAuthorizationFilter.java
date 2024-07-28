@@ -31,6 +31,8 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
     private static final String NO_CHECK_URL = "/auth/user";
 
+    private static final String NO_URL="/api/auth/login";
+
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         return requestMatcherHolder.getRequestMatchersByMinRole(null).matches(request);
@@ -39,6 +41,10 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         if (request.getRequestURI().equals(NO_CHECK_URL) ) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+        if (request.getRequestURI().equals(NO_URL) ) {
             filterChain.doFilter(request, response);
             return;
         }
