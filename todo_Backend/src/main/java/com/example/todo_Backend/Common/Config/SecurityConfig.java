@@ -10,6 +10,7 @@ import com.example.todo_Backend.Common.security.signin.service.JwtService;
 import com.example.todo_Backend.Common.security.signin.service.UserDetailsServiceImpl;
 import com.example.todo_Backend.User.Member.Repository.MemberRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -76,8 +77,6 @@ public class SecurityConfig {
                         // (신버전)
                         request.requestMatchers(requestMatcherHolder.getRequestMatchersByMinRole(null)).permitAll();
                         // request.requestMatchers(requestMatcherHolder.getRequestMatchersByMinRole(MemberRole.USER)).hasAnyAuthority(MemberRole.USER.getKey());
-                        
-                    
 
                         request.anyRequest().authenticated();
                     }
@@ -118,7 +117,7 @@ public class SecurityConfig {
 
     @Bean
     public SignInSuccessHandler signInSuccessHandler(){
-        return new SignInSuccessHandler(memberRepository, jwtService);
+        return new SignInSuccessHandler(memberRepository, jwtService,objectMapper);
     }
 
     @Bean
@@ -154,4 +153,5 @@ public class SecurityConfig {
     public JwtExceptionFilter jwtExceptionFilter() {
         return new JwtExceptionFilter();
     }
+
 }
