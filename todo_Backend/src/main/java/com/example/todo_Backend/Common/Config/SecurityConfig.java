@@ -9,14 +9,17 @@ import com.example.todo_Backend.Common.security.signin.handler.SignInSuccessHand
 import com.example.todo_Backend.Common.security.signin.service.JwtService;
 import com.example.todo_Backend.Common.security.signin.service.UserDetailsServiceImpl;
 import com.example.todo_Backend.User.Member.Repository.MemberRepository;
+import com.example.todo_Backend.User.Member.entity.MemberRole;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -28,7 +31,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.DelegatingPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.web.cors.CorsConfiguration;
 
@@ -48,12 +53,6 @@ public class SecurityConfig {
     private final ObjectMapper objectMapper;
     private final RequestMatcherHolder requestMatcherHolder;
 
-
-    // Swagger URL
-    private final String[] permitUrl = new String[]{"/swagger", "/swagger-ui.html", "/swagger-ui/**"
-            , "/api-docs", "/api-docs/**", "/v3/api-docs/**", "/uploadImage/**"
-    };
-
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() { // security를 적용하지 않을 리소스
         return web -> web.ignoring()
@@ -65,6 +64,7 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .cors(cors -> cors.configurationSource(request -> corsFilter()))
+//                .cors(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
@@ -72,14 +72,12 @@ public class SecurityConfig {
                 .headers(c -> c.frameOptions(
                         HeadersConfigurer.FrameOptionsConfig::disable).disable())
                 .sessionManagement(c -> c.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests((request) -> {
-                        
-                        // (신버전)
-                        request.requestMatchers(requestMatcherHolder.getRequestMatchersByMinRole(null)).permitAll();
-                        // request.requestMatchers(requestMatcherHolder.getRequestMatchersByMinRole(MemberRole.USER)).hasAnyAuthority(MemberRole.USER.getKey());
-
-                        request.anyRequest().authenticated();
-                    }
+                .authorizeHttpRequests((request) ->
+                        request.requestMatchers("/api/auth/user","/api/auth/login","/api-docs/**","/v3/api-docs/**","/swagger-ui/**").permitAll()
+                                .anyRequest().authenticated())
+                .exceptionHandling((exceptionHandling) -> exceptionHandling
+                        .authenticationEntryPoint(getUnathorizedEntryPoint())
+                        .accessDeniedHandler(getAccessDeniedHandler())
                 );
 
 
@@ -96,9 +94,8 @@ public class SecurityConfig {
     public CorsConfiguration corsFilter() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOrigins(Arrays.asList(
-                "http://localhost:3000", "http://localhost:3001"
-                , "https://localhost:3001", "https://tea-bliss.vercel.app/"
-                , "https://teabliss.kro.kr/"
+                "http://http://52.78.126.130:8080/"
+                ,"http://localhost:8080/"
         ));
         config.setAllowedMethods(Collections.singletonList("*"));
         config.setAllowCredentials(true);
@@ -152,6 +149,29 @@ public class SecurityConfig {
     @Bean
     public JwtExceptionFilter jwtExceptionFilter() {
         return new JwtExceptionFilter();
+    }
+
+    //권한없이 접근했을 때 접근 거부 상황 처리
+    private AccessDeniedHandler accessDeniedHandler = null;
+
+    private AccessDeniedHandler getAccessDeniedHandler() {
+        if(accessDeniedHandler == null){
+            return accessDeniedHandler = (request, response, accessDeniedException) -> {
+                response.sendError(HttpServletResponse.SC_FORBIDDEN); //403에러 발생
+            };
+        }
+        return accessDeniedHandler;
+    }
+
+    //사용자 인증이 실패한 경우
+    private AuthenticationEntryPoint authenticationEntryPoint = null;
+    private AuthenticationEntryPoint getUnathorizedEntryPoint(){
+        if(authenticationEntryPoint == null){
+            return authenticationEntryPoint = (request, response, authException) -> {
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED); //401 에러 발생
+            };
+        }
+        return authenticationEntryPoint;
     }
 
 }
