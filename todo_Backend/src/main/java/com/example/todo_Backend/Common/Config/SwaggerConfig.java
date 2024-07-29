@@ -15,10 +15,11 @@ import org.springframework.http.HttpHeaders;
 
 import java.util.List;
 
-@OpenAPIDefinition(servers = {
-
-        @Server(url = "http://localhost:8080", description = "Slide-Todo-Backend LOCAL SERVER")
-})
+@OpenAPIDefinition(
+        servers = {
+                @Server(url="http://52.78.126.130:8080/", description = "Default Server url")
+        }
+)
 @Configuration
 public class SwaggerConfig {
 
@@ -60,8 +61,8 @@ public class SwaggerConfig {
 
         return new OpenAPI()
                 .info(
-                new Info().title("Slide-Todo")
-                        .description("Slide-Todo Swagger 페이지")
+                new Info().title("Slid-Todo")
+                        .description("Slid-Todo Swagger 페이지")
                         .version("v1"))
                 .tags(tagList)
                 .addSecurityItem(securityRequirement)
