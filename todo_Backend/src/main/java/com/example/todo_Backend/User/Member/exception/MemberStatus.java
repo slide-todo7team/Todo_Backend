@@ -10,7 +10,8 @@ public enum MemberStatus {
     NOT_EQUAL_NEW_PASSWORD(400, "새 비밀번호 비교가 다릅니다."),
     NOT_FOUND_MEMBER_BY_ID(404, "유저를 찾을 수 없습니다"),
     NOT_FOUND_MEMBER_BY_EMAIL(400, "회원 이메일과 일치하는 정보가 없습니다."),
-    NOT_FOUND_MEMBER_BY_RefreshToken(401,"Unauthorized");
+    NOT_FOUND_MEMBER_BY_RefreshToken(401,"Unauthorized"),
+    NOT_EMAIL_FORM(400,"이메일 형식으로 작성해 주세요.");
 
     private final int status;
     private final String message;
