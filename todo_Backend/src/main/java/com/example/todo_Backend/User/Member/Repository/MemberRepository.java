@@ -31,5 +31,4 @@ public interface MemberRepository extends JpaRepository<Member,Long> {
     Member save(Member member);
 
     List<Member> findByMemIdIn(List<Long> collect);
-
 }
