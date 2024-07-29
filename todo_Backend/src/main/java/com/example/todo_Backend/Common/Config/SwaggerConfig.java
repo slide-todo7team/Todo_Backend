@@ -26,7 +26,9 @@ public class SwaggerConfig {
     public GroupedOpenApi pageApi() {
         String[] paths = {
                 "/api/member/**",
-
+                "/api/groups/**",
+                "/api/auth/**",
+                "/api/**"
         };
 
         return GroupedOpenApi.builder()
