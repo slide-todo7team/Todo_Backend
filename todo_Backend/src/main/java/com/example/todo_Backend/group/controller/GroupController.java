@@ -70,8 +70,8 @@ public class GroupController {
 
     @GetMapping("/code/{groupId}")
     @Operation(summary = "초대코드 재생성", description = "초대 코드 재생성 API")
-    public ResponseEntity<GroupCodeDto> getNewSecretCode(@PathVariable Long groupId, @RequestBody GroupCodeDto groupCodeDto){
-        return ResponseEntity.ok(groupService.getNewSecretCode(groupId,groupCodeDto));
+    public ResponseEntity<GroupCodeDto> getNewSecretCode(@PathVariable Long groupId){
+        return ResponseEntity.ok(groupService.getNewSecretCode(groupId));
     }
 
     @PatchMapping("/code/{groupId}")
