@@ -19,6 +19,8 @@ import java.util.List;
         servers = {
                 @Server(url="http://52.78.126.130:8080/", description = "Ec2 Server url"),
                 @Server(url="http://localhost:8080/", description="Local Server Url")
+
+
         }
 )
 @Configuration
