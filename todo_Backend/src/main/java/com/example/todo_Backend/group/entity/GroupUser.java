@@ -38,6 +38,7 @@ public class GroupUser {
     @Column(name = "contribution_rank")
     private Integer contributionRank = 10;
 
+    @Setter
     private String color;
 
     //    public GroupUser(Long groupId, Long memberId) {

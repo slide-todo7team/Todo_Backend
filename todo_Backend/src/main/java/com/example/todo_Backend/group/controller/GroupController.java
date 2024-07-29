@@ -68,10 +68,16 @@ public class GroupController {
         return ResponseEntity.ok(groupService.leaveGroup(groupId,memberId));
     }
 
-    @PatchMapping("/{groupId}")
+    @GetMapping("/code/{groupId}")
     @Operation(summary = "초대코드 재생성", description = "초대 코드 재생성 API")
+    public ResponseEntity<GroupCodeDto> getNewSecretCode(@PathVariable Long groupId, @RequestBody GroupCodeDto groupCodeDto){
+        return ResponseEntity.ok(groupService.getNewSecretCode(groupId,groupCodeDto));
+    }
+
+    @PatchMapping("/code/{groupId}")
+    @Operation(summary = "새로운 초대코드 저장")
     public ResponseEntity<GroupInfoDto> updateSecretCode(@PathVariable Long groupId, @RequestBody GroupCodeDto groupCodeDto){
-        return ResponseEntity.ok(groupService.updateSecretCode(groupId,groupCodeDto));
+        return ResponseEntity.ok(groupService.updateSecretcode(groupId,groupCodeDto.getSecretCode()));
     }
 
 

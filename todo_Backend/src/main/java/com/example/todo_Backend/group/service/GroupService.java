@@ -44,10 +44,8 @@ public class GroupService {
             throw new DuplicationGroupTitleException(groupCreateRequestDto.getTitle());
         }
 
-        //!!!!!!!!!!!!!!!색상 부여 로직 추가 필요 !!!!!!!!!!!!!!!1
-
         Group saveGroup = groupRepository.save(group); //group 테이블에 정보 저장
-        saveGroupMemInfo(saveGroup.getId(),groupCreateRequestDto.getMemberId(),1);
+        saveGroupMemInfo(saveGroup.getId(),groupCreateRequestDto.getMemberId(),1,ColorEnum.getRandomHex());
 
         return new GroupCreateResponseDto(saveGroup);
     }
@@ -59,9 +57,7 @@ public class GroupService {
         Group group = groupRepository.findBySecretCode(secretCode)
                 .orElseThrow(() -> new NotEqualSecretCodeException(secretCode));
 
-        saveGroupMemInfo(group.getId(), memberId,0);
-
-        //!!!!!!!!!!!!!!!색상 부여 로직 추가 필요 !!!!!!!!!!!!!!!1
+        saveGroupMemInfo(group.getId(), memberId,0,ColorEnum.getRandomHex());
 
         return new GroupCreateResponseDto(group);
     }
@@ -144,7 +140,7 @@ public class GroupService {
         return GroupResponse.ok();
     }
 
-    public GroupInfoDto updateSecretCode(Long groupId, GroupCodeDto groupCodeDto){
+    public GroupCodeDto getNewSecretCode(Long groupId, GroupCodeDto groupCodeDto){
 
         //그룹 존재 확인
         Group group = groupRepository.findById(groupId).orElseThrow(() -> new NotFoundGroupException(groupId));
@@ -156,19 +152,36 @@ public class GroupService {
         //새 코드 생성
         int newCode = generateRandomNumber();
 
-        group.setSecretCode(newCode);
+        return GroupCodeDto.builder()
+                .secretCode(String.valueOf(newCode))
+                .build();
+
+//        group.setSecretCode(newCode);
+//        groupRepository.save(group);
+
+//        return getGroupInfo(groupId);
+
+    }
+
+    public GroupInfoDto updateSecretcode(Long groupId, String newSecretCode){
+        //그룹 존재 확인
+        Group group = groupRepository.findById(groupId).orElseThrow(() -> new NotFoundGroupException(groupId));
+
+        group.setSecretCode(Integer.parseInt(newSecretCode));
         groupRepository.save(group);
 
         return getGroupInfo(groupId);
+
     }
 
 
     //그룹 멤버 저장
-    public void saveGroupMemInfo(Long groupId, Long memberId, Integer isLeader) {
+    public void saveGroupMemInfo(Long groupId, Long memberId, Integer isLeader,String Color) {
         GroupUser groupUser = new GroupUser();
         groupUser.setGroup(groupRepository.getReferenceById(groupId));
         groupUser.setMemberId(memberId);
         groupUser.setIsLeader(isLeader);
+        groupUser.setColor(Color);
         groupUserRepository.save(groupUser);
     }
 
