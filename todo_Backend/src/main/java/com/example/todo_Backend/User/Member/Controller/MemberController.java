@@ -57,10 +57,10 @@ public class MemberController {
     @GetMapping("/tokens")
     @Operation(summary = "회원 토큰 요청", description = "회원 정보 API")
     public ResponseEntity<MemberTokenResDto> getTokens(
-            @AuthenticationPrincipal MemberDetails memberDetails,@RequestBody String refreshToken
+            @AuthenticationPrincipal MemberDetails memberDetails,@RequestBody RefreshTokenDto refreshTokenDto
     ) {
 
-        MemberTokenResDto memberDto = memberService.getTokens(refreshToken,memberDetails.getUsername());
+        MemberTokenResDto memberDto = memberService.getTokens(refreshTokenDto.getRefreshToken(),memberDetails.getMember().getEmail());
 
         return ResponseEntity.ok(memberDto);
     }

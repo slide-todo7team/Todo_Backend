@@ -14,14 +14,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -30,6 +28,9 @@ public class JwtService {
 
     @Value("${jwt.secret}")
     private String secret;
+
+    public static final String AUTHORIZATION_HEADER = "Authorization";
+    public static final String PREFIX = "Bearer";
 
 
     private static final long ACCESS_TOKEN_EXPIRED_TIME = 1000L * 60L * 60L * 24L; // 1일
@@ -56,8 +57,7 @@ public class JwtService {
                 .setIssuedAt(date)
                 .setExpiration(new Date(date.getTime() + ACCESS_TOKEN_EXPIRED_TIME));
 
-
-
+        claims.put("email",email);
 
         return Jwts.builder()
                 .setHeader(createHeader())
@@ -124,9 +124,14 @@ public class JwtService {
     }
 
     public Optional<String> extractAccessToken(HttpServletRequest request) {
-        return Optional.ofNullable(request.getHeader(ACCESS_TOKEN))
-                .filter(accessToken -> accessToken.startsWith(BEARER))
-                .map(accessToken -> accessToken.replace(BEARER, ""));
+        String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
+        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(PREFIX)) {
+            String[] tokenParts = bearerToken.split(" ");
+            if (tokenParts.length == 2) {
+                return Optional.of(tokenParts[1].trim());
+            }
+        }
+        return Optional.empty(); // null 대신 Optional.empty() 반환
     }
 
     public Optional<String> extractRefreshToken(HttpServletRequest request) {
@@ -146,12 +151,26 @@ public class JwtService {
         }
     }
 
+    public Optional<Long> extractMemId(String accessToken) {
+        try {
+            return Optional.ofNullable(Jwts.parserBuilder()
+                    .setSigningKey(getSecretKey())
+                    .build()
+                    .parseClaimsJws(accessToken)
+                    .getBody().get("memId",Long.class));
+        } catch (Exception e) {
+            log.error("유효하지 않은 AccessToken입니다", e);
+            return Optional.empty();
+        }
+    }
+
     public boolean isTokenValid(String token) {
+        String cleanedToken = token.trim();
         try {
             Jwts.parserBuilder()
                     .setSigningKey(getSecretKey())
                     .build()
-                    .parseClaimsJws(token);
+                    .parseClaimsJws(cleanedToken);
 
             return true;
         } catch (MalformedJwtException e) {

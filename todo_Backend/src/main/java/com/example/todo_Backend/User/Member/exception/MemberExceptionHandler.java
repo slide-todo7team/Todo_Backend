@@ -94,5 +94,16 @@ public class MemberExceptionHandler {
         return ResponseEntity.badRequest().body(response);
     }
 
+    @ExceptionHandler(NotEmailFormException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    private ResponseEntity<MemberResponse> handler(NotEmailFormException e) {
+
+        MemberResponse response = MemberResponse.builder()
+                .status(e.getStatus())
+                .message(e.getMessage())
+                .build();
+
+        return ResponseEntity.badRequest().body(response);
+    }
 
 }

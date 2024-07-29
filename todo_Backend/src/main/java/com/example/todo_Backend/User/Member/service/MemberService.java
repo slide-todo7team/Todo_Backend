@@ -6,6 +6,7 @@ import com.example.todo_Backend.User.Member.Dto.MemberSignUpDto;
 import com.example.todo_Backend.User.Member.Dto.MemberTokenResDto;
 import com.example.todo_Backend.User.Member.entity.Member;
 import com.example.todo_Backend.User.Member.exception.DuplicationMemberEmailException;
+import com.example.todo_Backend.User.Member.exception.NotEmailFormException;
 import com.example.todo_Backend.User.Member.exception.NotFoundException;
 import com.example.todo_Backend.User.Member.exception.NotFoundRefreshToken;
 import com.example.todo_Backend.User.Member.Repository.MemberRepository;
@@ -14,6 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 @Service
 @RequiredArgsConstructor
@@ -25,6 +27,11 @@ public class MemberService {
     private final PasswordEncoder encoder;
 
     public MemberFinalSignUpResDto createMember(MemberSignUpDto memberSignUpDto) {
+
+        // 이메일 형식 체크
+        if (!isValidEmail(memberSignUpDto.getEmail())) {
+            throw new NotEmailFormException();
+        }
 
         // 이메일 중복
         if(memberRepository.existsByEmail(memberSignUpDto.getEmail()))
@@ -73,6 +80,7 @@ public class MemberService {
 
         String accessToken = jwtService.createAccessToken(email
         );
+        
 
         return
                 MemberTokenResDto
@@ -82,5 +90,12 @@ public class MemberService {
                         .build();
 
 
+    }
+
+    // 이메일 형식 검증 메서드
+    private boolean isValidEmail(String email) {
+        String emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$"; // 기본 이메일 정규 표현식
+        Pattern pattern = Pattern.compile(emailRegex);
+        return pattern.matcher(email).matches();
     }
 }
