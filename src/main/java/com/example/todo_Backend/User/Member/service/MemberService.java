@@ -98,4 +98,10 @@ public class MemberService {
         Pattern pattern = Pattern.compile(emailRegex);
         return pattern.matcher(email).matches();
     }
+
+    public String findByEmail(String email) {
+        Optional<Member> member = memberRepository.findByEmail(email);
+        String userName = member.map(Member::getName).orElse(null);
+        return userName;
+    }
 }

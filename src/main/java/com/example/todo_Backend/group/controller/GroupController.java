@@ -1,6 +1,7 @@
 package com.example.todo_Backend.group.controller;
 
 import com.example.todo_Backend.User.Member.entity.MemberDetails;
+import com.example.todo_Backend.User.Member.service.MemberService;
 import com.example.todo_Backend.group.dto.*;
 import com.example.todo_Backend.group.service.GroupService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -19,12 +20,13 @@ import java.util.List;
 public class GroupController {
 
     private final GroupService groupService;
+    private final MemberService memberService;
 
     @PostMapping("")
     @Operation(summary = "그룹 생성",description = "그룹 생성 API")
     public ResponseEntity<GroupCreateResponseDto> createGroup(@RequestBody GroupTitleDto groupTitleDto, @AuthenticationPrincipal MemberDetails memberDetails) {
 
-        String userName = memberDetails.getUsername();
+        String userName = memberService.findByEmail(memberDetails.getUsername());
         Long memberId = memberDetails.getMemberId();
 
         GroupCreateRequestDto groupCreateRequestDto = GroupCreateRequestDto.builder()
@@ -70,8 +72,8 @@ public class GroupController {
 
     @GetMapping("/code/{groupId}")
     @Operation(summary = "초대코드 재생성", description = "초대 코드 재생성 API")
-    public ResponseEntity<GroupCodeDto> getNewSecretCode(@PathVariable Long groupId, @RequestBody GroupCodeDto groupCodeDto){
-        return ResponseEntity.ok(groupService.getNewSecretCode(groupId,groupCodeDto));
+    public ResponseEntity<GroupCodeDto> getNewSecretCode(@PathVariable Long groupId){
+        return ResponseEntity.ok(groupService.getNewSecretCode(groupId));
     }
 
     @PatchMapping("/code/{groupId}")

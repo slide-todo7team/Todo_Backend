@@ -140,14 +140,10 @@ public class GroupService {
         return GroupResponse.ok();
     }
 
-    public GroupCodeDto getNewSecretCode(Long groupId, GroupCodeDto groupCodeDto){
+    public GroupCodeDto getNewSecretCode(Long groupId){
 
         //그룹 존재 확인
         Group group = groupRepository.findById(groupId).orElseThrow(() -> new NotFoundGroupException(groupId));
-
-        if(!group.getSecretCode().equals(groupCodeDto.getSecretCode())){
-            throw new NotEqualSecretCodeException(groupCodeDto.getSecretCode());
-        }
 
         //새 코드 생성
         int newCode = generateRandomNumber();
@@ -155,11 +151,6 @@ public class GroupService {
         return GroupCodeDto.builder()
                 .secretCode(String.valueOf(newCode))
                 .build();
-
-//        group.setSecretCode(newCode);
-//        groupRepository.save(group);
-
-//        return getGroupInfo(groupId);
 
     }
 
