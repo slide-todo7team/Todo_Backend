@@ -45,19 +45,19 @@ public class GroupService {
         }
 
         Group saveGroup = groupRepository.save(group); //group 테이블에 정보 저장
-        saveGroupMemInfo(saveGroup.getId(),groupCreateRequestDto.getMemberId(),1,ColorEnum.getRandomHex());
+        saveGroupMemInfo(saveGroup.getId(),groupCreateRequestDto.getMemberId(),groupCreateRequestDto.getCreateUser(),1,ColorEnum.getRandomHex());
 
         return new GroupCreateResponseDto(saveGroup);
     }
 
     //그룹 참여
-    public GroupCreateResponseDto enterGroup(String secretCode, Long memberId) {
+    public GroupCreateResponseDto enterGroup(String secretCode, Long memberId, String userName) {
 
         //초대코드 존재 확인
         Group group = groupRepository.findBySecretCode(secretCode)
                 .orElseThrow(() -> new NotEqualSecretCodeException(secretCode));
 
-        saveGroupMemInfo(group.getId(), memberId,0,ColorEnum.getRandomHex());
+        saveGroupMemInfo(group.getId(), memberId,userName,0,ColorEnum.getRandomHex());
 
         return new GroupCreateResponseDto(group);
     }
@@ -77,7 +77,7 @@ public class GroupService {
         Group group = groupRepository.findById(groupId).orElseThrow(() -> new NotFoundGroupException(groupId));
 
         //group_user entity 조회
-        List<GroupUser> groupUsers = groupUserRepository.findByGroupId(groupId);
+        List<GroupUser> groupUsers = groupUserRepository.findAllByGroupId(groupId);
 
         //member entity 조회
         List<Member> members = memberRepository.findByMemIdIn(groupUsers.stream()
@@ -167,10 +167,11 @@ public class GroupService {
 
 
     //그룹 멤버 저장
-    public void saveGroupMemInfo(Long groupId, Long memberId, Integer isLeader,String Color) {
+    public void saveGroupMemInfo(Long groupId, Long memberId, String memberName, Integer isLeader,String Color) {
         GroupUser groupUser = new GroupUser();
         groupUser.setGroup(groupRepository.getReferenceById(groupId));
         groupUser.setMemberId(memberId);
+        groupUser.setMemberName(memberName);
         groupUser.setIsLeader(isLeader);
         groupUser.setColor(Color);
         groupUserRepository.save(groupUser);

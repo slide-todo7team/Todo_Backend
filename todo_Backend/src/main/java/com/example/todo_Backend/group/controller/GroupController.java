@@ -42,7 +42,8 @@ public class GroupController {
     @Operation(summary = "그룹 참여 하기",description = "그룹 참여 API")
     public ResponseEntity<GroupCreateResponseDto> enterGroup(@RequestBody GroupCodeDto groupCodeDto, @AuthenticationPrincipal MemberDetails memberDetails){
         Long memberId = memberDetails.getMemberId();
-        return ResponseEntity.ok(groupService.enterGroup(groupCodeDto.getSecretCode(),memberId));
+        String userName = memberService.findByEmail(memberDetails.getUsername());
+        return ResponseEntity.ok(groupService.enterGroup(groupCodeDto.getSecretCode(),memberId,userName));
     }
 
     @GetMapping("")

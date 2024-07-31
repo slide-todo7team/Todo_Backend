@@ -16,12 +16,6 @@ public class GroupUser {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-//    @Column(name = "group_id")
-//    private Long groupId;
-//
-//    @Column(name = "member_id")
-//    private Long memberId;
-
     @Setter
     @ManyToOne
     @JoinColumn(name = "group_id")
@@ -30,6 +24,9 @@ public class GroupUser {
     @Setter
     @Column(name = "member_id")
     private Long memberId;
+
+    @Setter
+    private String memberName;
 
     @Setter
     @Column(name = "is_leader")
