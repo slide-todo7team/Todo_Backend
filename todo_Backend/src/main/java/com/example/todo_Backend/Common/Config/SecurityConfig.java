@@ -96,6 +96,7 @@ public class SecurityConfig {
         config.setAllowedOrigins(Arrays.asList(
                 "http://http://52.78.126.130:8080/"
                 ,"http://localhost:8080/"
+                ,"http://localhost:3000"
         ));
         config.setAllowedMethods(Collections.singletonList("*"));
         config.setAllowCredentials(true);
