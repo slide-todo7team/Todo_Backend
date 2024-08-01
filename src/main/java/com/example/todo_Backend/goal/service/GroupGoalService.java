@@ -135,69 +135,6 @@ public class GroupGoalService {
                 .build();
     }
 
-
-
-//    public GroupGoalTodoResponseDto getAllGroupGoalTodo(Long userId, Long groupId){
-//
-//        Group group = groupRepository.findById(groupId).get();
-//
-//        List<GroupGoal> groupGoals = groupGoalRepository.findAllByGroupId(groupId);
-//
-//        List<GroupGoalTodoDto> groupGoalDtos = new ArrayList<>();
-//
-//        //그룹 멤버 정보 가져오기
-//        List<GroupUser> groupUsers = groupUserRepository.findAllByGroupId(groupId);
-//
-//        for(GroupGoal groupGoal: groupGoals){
-//
-//            //그룹 목표와 연관된 할일들 조회
-//            List<GroupTodo> groupTodos = groupTodoRepository.findAllByGoalId(groupGoal.getId());
-//
-//            List<GroupProgressDto.GroupGoalMemDto> groupGoalMemDtos = groupUsers.stream()
-//                    .map(user-> {
-//                        Integer contributionPercent = goalProgressService.calContributionPercent(groupTodos,user.getId());
-//                        return GroupProgressDto.GroupGoalMemDto.builder()
-//                                .name(user.getMemberName())
-//                                .contributionPercent(contributionPercent)
-//                                .color(user.getColor())
-//                                .build();
-//                    })
-//                    .collect(Collectors.toList());
-//
-//
-//            GroupProgressDto groupProgressDto = GroupProgressDto.builder()
-//                    .completedPercent(goalProgressService.calCompletedPercent(groupTodos))
-//                    .memebers(groupGoalMemDtos)
-//                    .build();
-//
-//            //할일->DTO 로 변환
-//            List<GroupGoalTodoDto.GroupTodoDto> groupTodoDtos = groupTodos.stream()
-//                    .map(todo -> GroupGoalTodoDto.GroupTodoDto.builder()
-//                            .noteId(todo.getNoteId())
-//                            .done(todo.getDone())
-//                            .title(todo.getTitle())
-//                            .id(todo.getId())
-//                            .build())
-//                    .toList();
-//
-//            GroupGoalTodoDto groupGoalTodoDto = GroupGoalTodoDto.builder()
-//                    .title(groupGoal.getTitle())
-//                    .id(groupGoal.getId())
-//                    .updatedAt(groupGoal.getUpdatedAt())
-//                    .createdAt(groupGoal.getCreatedAt())
-//                    .todos(groupTodoDtos)
-//                    .progress(groupProgressDto)
-//                    .build();
-//
-//            groupGoalDtos.add(groupGoalTodoDto); // to do 리스트에 추가
-//        }
-//
-//        return GroupGoalTodoResponseDto.builder()
-//                .title(group.getTitle())
-//                .groupGoals(groupGoalDtos)
-//                .build();
-//    }
-
     public GroupGoalDto updateGroupGoal(Long groupId, Long goalId, String title) {
         checkTitleLength(title);
 

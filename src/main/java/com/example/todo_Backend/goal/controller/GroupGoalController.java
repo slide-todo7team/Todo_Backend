@@ -32,14 +32,6 @@ public class GroupGoalController {
         return ResponseEntity.ok(groupGoalService.getGroupGoals(groupId));
     }
 
-//    @GetMapping("/goals/todos/{groupId}")
-//    @Operation(summary = "그룹 목표 & 할일 리스트 조회")
-//    public ResponseEntity<GroupGoalTodoResponseDto> getAllGroupGoalTodo(@AuthenticationPrincipal MemberDetails memberDetails, @PathVariable Long groupId){
-//        Long userId = memberDetails.getMemberId();
-//        return ResponseEntity.ok(groupGoalService.getAllGroupGoalTodo(userId,groupId));
-//
-//    }
-
     @GetMapping("/goals/todos/{groupId}")
     @Operation(summary = "그룹 목표 & 할일 리스트 조회")
     public ResponseEntity<CursorResponseDto<GroupGoalTodoDto>> getAllGroupGoalTodo(@AuthenticationPrincipal MemberDetails memberDetails, @PathVariable Long groupId, @RequestParam Long cursor, @RequestParam Integer limit){

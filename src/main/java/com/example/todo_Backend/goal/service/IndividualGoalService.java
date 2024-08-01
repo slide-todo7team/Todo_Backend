@@ -128,44 +128,6 @@ public class IndividualGoalService {
         return new CursorResponseDto<>(nextCursor, totalCount, individualGoalDtos);
     }
 
-//    public List<IndividualGoalTodoDto> getAllIndividualGoalsTodos(Long userId) {
-//
-//        //개인 목표 entity 조회
-//        List<IndividualGoal> individualGoals = individualGoalRepository.findAllByUserId(userId);
-//
-//        List<IndividualGoalTodoDto> individualGoalDtos = new ArrayList<>();
-//
-//        for (IndividualGoal individualGoal : individualGoals) {
-//            IndividualGoalTodoDto individualGoalTodoDto = IndividualGoalTodoDto.builder()
-//                    .title(individualGoal.getTitle())
-//                    .id(individualGoal.getId())
-//                    .userId(userId)
-//                    .updatedAt(individualGoal.getUpdatedAt())
-//                    .createdAt(individualGoal.getCreatedAt())
-//                    .progress(individualGoal.getProgress())
-//                    .build();
-//
-//            //할 일 리스트
-//            List<IndividualTodo> individualTodos = individualTodoRepository.findAllByGoalId(individualGoal.getId());
-//
-//            List<IndividualGoalTodoDto.IndividualTodoDto> todoDtos = individualTodos.stream()
-//                    .map(todo -> IndividualGoalTodoDto.IndividualTodoDto.builder()
-//                            .id(todo.getId())
-//                            .noteId(todo.getNoteId())
-//                            .title(todo.getTitle())
-//                            .done(todo.getDone())
-//                            .build())
-//                    .collect(Collectors.toList());
-//
-//            // 할일 리스트 설정
-//            individualGoalTodoDto.setTodos(todoDtos);
-//            // DTO 리스트에 추가
-//            individualGoalDtos.add(individualGoalTodoDto);
-//        }
-//        return individualGoalDtos;
-//    }
-
-
     public void checkTitleLength(String title){
         if(title.length() > 30){
             throw new TitleLengthException(title);
